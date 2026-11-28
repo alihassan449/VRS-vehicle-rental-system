@@ -1,26 +1,26 @@
-# Vehicle Rental System - Test Scenarios (sample runs)
+# Vehicle Rental System - Test Scenarios (Sample Runs)
 
-Har step ke saath **Expected** likha hai. Jo expected se alag aaye, wo note kar lo.
+Each step has an **Expected** result. Note down anything that differs.
 
-**Pehle ye samajh lo**
-- Dates ka format: `yyyy-MM-dd` (jaise `2026-11-29`). Date-time ka format: `yyyy-MM-dd HH:mm` (jaise `2026-11-29 10:00`).
-- Neeche ki dates is maan par hain ke aaj **2026-11-28** hai. Agar laptop ki date alag ho to sab dates utni hi aage/peeche kar lo (sirf Step 5 ka "2 din late" wala hisaab barqarar rakhna).
-- IDs (`CUS-0001`, `RES-0001`...) tab milenge jab database naya ho. Agar pehle test data ban chuka ho to IDs mein agla number aayega. Table se ID dekh kar use karo.
-- Fresh start chahiye to SSMS mein `DROP DATABASE VehicleRental;` chalao, program dobara start hoga to naya ban jayega.
-- Har tab mein Enter ya Down Arrow dabane se agli field par jana chahiye.
+**Before you start**
+- Date format: `yyyy-MM-dd` (e.g. `2026-11-29`). Date-time format: `yyyy-MM-dd HH:mm` (e.g. `2026-11-29 10:00`).
+- The dates below assume today is **2026-11-28**. If your laptop date is different, shift all dates by the same amount (keep the "2 days late" calculation in Step 5.4 intact).
+- IDs (`CUS-0001`, `RES-0001`, ...) are correct only for a fresh database. If test data already exists, the next number is used. Read the ID from the table before using it.
+- For a fresh start run `DROP DATABASE VehicleRental;` in SSMS. The program creates it again on the next start.
+- In every tab, pressing Enter or Down Arrow in a text field should move to the next field.
 
 ---
 
-## 1. Login aur roles
+## 1. Login and roles
 
-| # | Kaam | Expected |
+| # | Action | Expected |
 |---|---|---|
-| 1.1 | `rental` / `wrongpass` se login | "Wrong username or password" |
-| 1.2 | Khaali username ya password chhod kar Login | "Please enter username and password" |
-| 1.3 | `rental` / `rental123` | Sirf 5 tabs: Customers, Reservations, Rentals, Payments, Reports. Header mein "Ali Hassan (Rental Staff)" |
-| 1.4 | Logout, phir `fleet` / `fleet123` | Sirf 3 tabs: Vehicles, Maintenance, Reports |
-| 1.5 | Logout, phir `admin` / `admin123` | Sab 7 tabs |
-| 1.6 | Capital letters mein `ADMIN` / `admin123` | Login ho jana chahiye (username case-insensitive hai) |
+| 1.1 | Login with `rental` / `wrongpass` | "Wrong username or password" |
+| 1.2 | Click Login with an empty username or password | "Please enter username and password" |
+| 1.3 | `rental` / `rental123` | Only 5 tabs: Customers, Reservations, Rentals, Payments, Reports. Header shows "Ali Hassan (Rental Staff)" |
+| 1.4 | Logout, then `fleet` / `fleet123` | Only 3 tabs: Vehicles, Maintenance, Reports |
+| 1.5 | Logout, then `admin` / `admin123` | All 7 tabs |
+| 1.6 | Login with `ADMIN` (capital letters) / `admin123` | Login works (username is not case-sensitive) |
 
 ---
 
@@ -28,9 +28,9 @@ Har step ke saath **Expected** likha hai. Jo expected se alag aaye, wo note kar 
 
 Login: `fleet` / `fleet123` -> **Vehicles** tab.
 
-**Check:** form chhota hai aur neeche table mein vehicles saaf nazar aate hain (aap ka purana masla).
+**Check:** the form is compact and the vehicle table is clearly visible below it.
 
-### 2.1 Teen vehicles register karo (FR6, FR7)
+### 2.1 Register three vehicles (FR6, FR7)
 
 | Reg no | Make | Model | Year | Category | Transmission | Fuel | Mileage | Daily rate |
 |---|---|---|---|---|---|---|---|---|
@@ -38,33 +38,32 @@ Login: `fleet` / `fleet123` -> **Vehicles** tab.
 | LEB-202 | Suzuki | Alto | 2021 | ECONOMY | Manual | Petrol | 30000 | 50 |
 | LEC-303 | Toyota | Hilux | 2023 | SUV | Manual | Diesel | 8000 | 150 |
 
-**Expected:** teeno table mein status **AVAILABLE** ke saath.
+**Expected:** all three appear in the table with status **AVAILABLE**.
 
-### 2.2 Galat input
+### 2.2 Invalid input
 
-| # | Kaam | Expected error |
+| # | Action | Expected error |
 |---|---|---|
-| 2.2a | LEA-101 dobara register | "Vehicle LEA-101 is already registered" |
+| 2.2a | Register LEA-101 again | "Vehicle LEA-101 is already registered" |
 | 2.2b | Daily rate `0` | "Daily rental rate must be greater than zero" |
 | 2.2c | Mileage `-5` | "Mileage cannot be negative" |
-| 2.2d | Year mein `abc` | valid model year ka error |
-| 2.2e | Registration number khaali | "Registration number is required" |
+| 2.2d | Year = `abc` | Error about a valid model year |
+| 2.2e | Empty registration number | "Registration number is required" |
 
 ### 2.3 Search (FR9)
 
 | Search | Expected |
 |---|---|
-| Reg. No. `LEA` | sirf LEA-101 |
-| Category SUV | sirf LEC-303 |
-| Status AVAILABLE | teeno |
-| Show All | teeno |
+| Reg. No. `LEA` | only LEA-101 |
+| Category SUV | only LEC-303 |
+| Status AVAILABLE | all three |
+| Show All | all three |
 
 ### 2.4 Status (FR8)
 
-1. LEC-303 select -> **Mark Selected INACTIVE** -> status **INACTIVE**.
-2. Dobara select -> **Reactivate Selected** -> **AVAILABLE**.
-3. Search mein Status = INACTIVE -> pehle INACTIVE karke dekho, wo list mein aata hai.
-4. Phir wapas Reactivate kar do (aage ke tests ke liye).
+1. Select LEC-303 -> **Mark Selected INACTIVE** -> status becomes **INACTIVE**.
+2. Search with Status = INACTIVE -> LEC-303 is listed.
+3. Select it again -> **Reactivate Selected** -> **AVAILABLE**. (Needed for the later tests.)
 
 ---
 
@@ -72,11 +71,11 @@ Login: `fleet` / `fleet123` -> **Vehicles** tab.
 
 Login: `rental` / `rental123` -> **Customers** tab.
 
-### 3.1 Do customers register karo (FR1)
+### 3.1 Register two customers (FR1)
 
 | Field | Customer 1 | Customer 2 (expired license) |
 |---|---|---|
-| Customer ID | (khaali chhodo) | (khaali chhodo) |
+| Customer ID | (leave blank) | (leave blank) |
 | Name | Ali Raza | Sana Malik |
 | Contact number | 0300-1234567 | 0321-7654321 |
 | National ID | 35202-1234567-1 | 35201-7654321-2 |
@@ -84,16 +83,16 @@ Login: `rental` / `rental123` -> **Customers** tab.
 | Driving license no | LIC-2024-001 | LIC-2019-777 |
 | License expiry | 2030-12-31 | 2025-01-01 |
 
-**Expected:** `CUS-0001` aur `CUS-0002` table mein aa jayen.
+**Expected:** `CUS-0001` and `CUS-0002` appear in the table.
 
-### 3.2 Galat input
+### 3.2 Invalid input
 
-| # | Kaam | Expected |
+| # | Action | Expected |
 |---|---|---|
-| 3.2a | Customer 1 ka National ID dobara kisi aur naam se | "A customer with National ID 35202-1234567-1 already exists" |
-| 3.2b | Name khaali | "... is required" |
-| 3.2c | License expiry khaali | "Driving license expiry date is required" |
-| 3.2d | License expiry `31-12-2030` (galat format) | date format ka error |
+| 3.2a | Register a new customer with Ali's National ID `35202-1234567-1` | "A customer with National ID 35202-1234567-1 already exists" |
+| 3.2b | Empty name | "... is required" |
+| 3.2c | Empty license expiry | "Driving license expiry date is required" |
+| 3.2d | License expiry `31-12-2030` (wrong format) | Date format error |
 
 ### 3.3 Search (FR2)
 
@@ -102,18 +101,18 @@ Login: `rental` / `rental123` -> **Customers** tab.
 | `Ali` | Ali Raza |
 | `CUS-0002` | Sana Malik |
 | `35202-1234567-1` | Ali Raza |
-| `xyz` | khaali list |
+| `xyz` | empty list |
 
-### 3.4 Contact update (FR4)
+### 3.4 Update contact info (FR4)
 
-1. Ali Raza row select karo.
-2. Form mein **Address** = `House 50, DHA Phase 5, Lahore` aur **Contact number** = `0333-9876543` likho.
-3. **Update Contact Info of Selected** dabao.
+1. Select the Ali Raza row.
+2. In the form set **Address** = `House 50, DHA Phase 5, Lahore` and **Contact number** = `0333-9876543`.
+3. Click **Update Contact Info of Selected**.
 
-**Expected:** table mein nayi address aur contact. Baaki fields (name, national ID) wahi rahein.
+**Expected:** the table shows the new address and contact number. Name and National ID stay unchanged.
 
 ### 3.5 Rental history (FR3)
-Abhi Ali Raza select karke **Rental History of Selected** dabao -> abhi koi agreement nahi (khaali). Step 6 ke baad dobara dekhna.
+Select Ali Raza and click **Rental History of Selected**. It is empty for now. Check again after Step 6.
 
 ---
 
@@ -123,40 +122,40 @@ Abhi Ali Raza select karke **Rental History of Selected** dabao -> abhi koi agre
 
 ### 4.1 Available vehicles (FR12)
 Availability from `2026-11-29`, to `2026-12-02` -> **Show Available Vehicles**.
-**Expected:** LEA-101, LEB-202, LEC-303 teeno.
+**Expected:** LEA-101, LEB-202 and LEC-303 are all listed.
 
-### 4.2 Reservation banao (FR11, FR14)
+### 4.2 Create a reservation (FR11, FR14)
 Customer `CUS-0001`, vehicle `LEA-101`, pickup `2026-11-29`, return `2026-12-02` -> **Create Reservation**.
-**Expected:** `RES-0001`, status **PENDING**, estimated charge **300.00** (3 din x 100).
+**Expected:** `RES-0001`, status **PENDING**, estimated charge **300.00** (3 days x 100).
 
-### 4.3 Refuse hone wale cases
+### 4.3 Cases that must be refused
 
-| # | Kaam | Expected |
+| # | Action | Expected |
 |---|---|---|
-| 4.3a | CUS-0002 (expired license) + LEB-202, 2026-12-10 se 2026-12-12 | "Customer's driving license is expired - reservation refused" (FR5) |
+| 4.3a | CUS-0002 (expired license) + LEB-202, 2026-12-10 to 2026-12-12 | Reservation refused because the license is expired (FR5) |
 | 4.3b | CUS-0001 + LEB-202, pickup 2026-12-05, return 2026-12-02 | "Return date cannot be before the pickup date" |
 | 4.3c | Customer ID `CUS-9999` | "No customer with ID CUS-9999" |
 | 4.3d | Vehicle `ZZZ-000` | "No vehicle with registration number ZZZ-000" |
 
 ### 4.4 Confirm (FR13, FR15)
-RES-0001 select -> **Confirm** -> status **CONFIRMED**.
-(Fleet/Admin se Vehicles tab dekho: LEA-101 ab **RESERVED** hona chahiye.)
+Select RES-0001 -> **Confirm** -> status **CONFIRMED**.
+(With a Fleet or Admin login check the Vehicles tab: LEA-101 is now **RESERVED**.)
 
 ### 4.5 Overlap (FR13)
 CUS-0001 + LEA-101, pickup `2026-12-01`, return `2026-12-03` -> Create.
-**Expected:** "Vehicle already has a confirmed reservation overlapping these dates".
+**Expected:** refused because the vehicle already has a confirmed reservation overlapping these dates.
 
 ### 4.6 Cancel (FR16)
-1. CUS-0001 + LEB-202, `2026-12-10` se `2026-12-12` -> Create (**RES-0002**, estimated 100.00).
-2. Select -> **Cancel** -> status **CANCELLED**.
+1. CUS-0001 + LEB-202, `2026-12-10` to `2026-12-12` -> Create (**RES-0002**, estimated 100.00).
+2. Select it -> **Cancel** -> status **CANCELLED**.
 
 ### 4.7 Expire (FR15)
-1. CUS-0001 + LEB-202, `2026-12-15` se `2026-12-16` -> Create (**RES-0003**, estimated 50.00).
-2. Select -> **Mark Expired** -> status **EXPIRED**.
+1. CUS-0001 + LEB-202, `2026-12-15` to `2026-12-16` -> Create (**RES-0003**, estimated 50.00).
+2. Select it -> **Mark Expired** -> status **EXPIRED**.
 
 ---
 
-## 5. Rental Staff: Rentals - handover aur return (FR17 - FR23)
+## 5. Rental Staff: Rentals - handover and return (FR17 - FR23)
 
 **Rentals** tab.
 
@@ -170,27 +169,27 @@ CUS-0001 + LEA-101, pickup `2026-12-01`, return `2026-12-03` -> Create.
 | Fuel level | 80 |
 | Existing damage | small scratch on rear bumper |
 
--> **Create Agreement & Record Handover**.
-**Expected:** `AGR-0001` table mein; reservation **COLLECTED**; vehicle LEA-101 **RENTED** (Vehicles tab mein dekho).
+Click **Create Agreement & Record Handover**.
+**Expected:** `AGR-0001` appears; the reservation becomes **COLLECTED**; vehicle LEA-101 becomes **RENTED** (check in the Vehicles tab).
 
-### 5.2 Galat handover
+### 5.2 Invalid handover
 
-| # | Kaam | Expected |
+| # | Action | Expected |
 |---|---|---|
-| 5.2a | RES-0001 dobara handover | "... only be created from a CONFIRMED reservation (status: COLLECTED)" |
-| 5.2b | RES-0002 (cancelled) ka handover | "... CONFIRMED reservation (status: CANCELLED)" |
+| 5.2a | Handover RES-0001 again | Error: only a CONFIRMED reservation can be handed over (status: COLLECTED) |
+| 5.2b | Handover RES-0002 (cancelled) | Same error (status: CANCELLED) |
 | 5.2c | Fuel level `150` | "Fuel level must be between 0 and 100 (percent)" |
-| 5.2d | Starting mileage `14000` (vehicle ke current mileage 15000 se kam) | "Mileage cannot be less than the vehicle's current mileage (15000.0)" |
+| 5.2d | Starting mileage `14000` (less than the vehicle's current mileage 15000) | "Mileage cannot be less than the vehicle's current mileage (15000.0)" |
 
-### 5.3 Galat return (pehle ye try karo, phir sahi wala)
+### 5.3 Invalid return (try these first, then the correct one)
 
-| # | Kaam | Expected |
+| # | Action | Expected |
 |---|---|---|
-| 5.3a | Ending mileage `14000` (start se kam) | "Ending mileage cannot be less than the starting mileage" |
-| 5.3b | Return date/time `2026-11-28 09:00` (pickup se pehle) | "Return date/time cannot be before the pickup date/time" |
+| 5.3a | Ending mileage `14000` (less than start) | "Ending mileage cannot be less than the starting mileage" |
+| 5.3b | Return date/time `2026-11-28 09:00` (before pickup) | "Return date/time cannot be before the pickup date/time" |
 | 5.3c | Fuel `-5` | "Fuel level must be between 0 and 100 (percent)" |
 
-### 5.4 Return aur charges (FR20, FR21, FR22, FR23)
+### 5.4 Return and charges (FR20, FR21, FR22, FR23)
 
 | Field | Value |
 |---|---|
@@ -199,34 +198,34 @@ CUS-0001 + LEA-101, pickup `2026-12-01`, return `2026-12-03` -> Create.
 | Ending mileage | 15800 |
 | Fuel level | 50 |
 | New damage | cracked windshield;broken side mirror |
-| "Vehicle needs maintenance" | tick **nahi** karna |
+| "Vehicle needs maintenance" | leave **unticked** |
 
--> **Record Return & Calculate Charges**.
+Click **Record Return & Calculate Charges**.
 
-**Expected invoice (har hisaab check karo):**
+**Expected invoice (check every line):**
 
-| Item | Hisaab | Amount |
+| Item | Calculation | Amount |
 |---|---|---|
-| Base rental | 3 din x 100 | 300.00 |
-| Late return | wapas 2026-12-04, due 2026-12-02 = 2 din x 20 | 40.00 |
-| Excess mileage | 800 km chale, free 3 x 200 = 600, 200 km x 0.50 | 100.00 |
+| Base rental | 3 days x 100 | 300.00 |
+| Late return | returned 2026-12-04, due 2026-12-02 = 2 days x 20 | 40.00 |
+| Excess mileage | 800 km driven, 3 x 200 = 600 free, 200 km x 0.50 | 100.00 |
 | Fuel shortage | 80 -> 50 = 30 percent x 0.60 | 18.00 |
 | Damage | 2 items x 50 | 100.00 |
 | **TOTAL** | | **558.00** |
 
-Vehicle LEA-101 ab **AVAILABLE**, mileage **15800**.
+Vehicle LEA-101 is now **AVAILABLE** and its mileage is **15800**.
 
-### 5.5 Invoice dobara (FR25)
-AGR-0001 select -> **View Invoice of Selected** -> wahi 558.00 wala invoice.
+### 5.5 Invoice again (FR25)
+Select AGR-0001 -> **View Invoice of Selected** -> the same 558.00 invoice.
 
 ### 5.6 Maintenance option (FR23)
-Ek aur chhota rental karo jisme "Vehicle needs maintenance" tick ho:
-1. CUS-0001 + LEB-202, `2026-12-20` se `2026-12-21` -> Create -> Confirm.
-2. Handover: pickup `2026-12-20 09:00`, mileage 30000, fuel 100, damage khaali.
-3. Return: `2026-12-21 09:00`, mileage 30100, fuel 100, damage khaali, **tick "Vehicle needs maintenance"**.
+Do one more short rental with the "Vehicle needs maintenance" box ticked:
+1. CUS-0001 + LEB-202, `2026-12-20` to `2026-12-21` -> Create -> Confirm.
+2. Handover: pickup `2026-12-20 09:00`, mileage 30000, fuel 100, damage empty.
+3. Return: `2026-12-21 09:00`, mileage 30100, fuel 100, damage empty, **tick "Vehicle needs maintenance"**.
 
-**Expected:** total = 50.00 (koi extra charge nahi), vehicle LEB-202 **UNDER_MAINTENANCE**.
-Dhyan do: return par sirf vehicle ka status UNDER_MAINTENANCE hota hai, maintenance **record khud nahi banta**. Fleet staff ko Maintenance tab mein LEB-202 ke liye record banana hoga (jaise type `Brake check`, cost `40`, status `IN_PROGRESS`), aur kaam ho jaye to status `COMPLETED` karne se vehicle wapas AVAILABLE ho jata hai.
+**Expected:** total = 50.00 (no extra charges) and vehicle LEB-202 becomes **UNDER_MAINTENANCE**.
+Note: the return only changes the vehicle status. A maintenance **record is not created automatically**. Fleet staff must create a record for LEB-202 in the Maintenance tab (e.g. type `Brake check`, cost `40`, status `IN_PROGRESS`). When the work is done, set the record to `COMPLETED` and the vehicle becomes AVAILABLE again.
 
 ---
 
@@ -236,14 +235,14 @@ Dhyan do: return par sirf vehicle ka status UNDER_MAINTENANCE hota hai, maintena
 
 | # | Amount | Method | Expected |
 |---|---|---|---|
-| 6.1 | 300 | Cash | receipt `PAY-0001` dikhe; balance 258.00 |
-| 6.2 | 500 | Card | refuse: amount balance (258.00) se zyada |
-| 6.3 | 0 ya -10 | Cash | "must be greater than zero" |
-| 6.4 | 258 | Card | receipt `PAY-0002`; balance **0** |
+| 6.1 | 300 | Cash | Receipt `PAY-0001`; balance 258.00 |
+| 6.2 | 500 | Card | Refused: amount is more than the balance (258.00) |
+| 6.3 | 0 or -10 | Cash | "must be greater than zero" |
+| 6.4 | 258 | Card | Receipt `PAY-0002`; balance **0** |
 
-Select karke **View Invoice** -> invoice mein dono payments aur Balance 0.00.
+Select the agreement and click **View Invoice**: both payments are listed and the balance is 0.00.
 
-Ab Customers tab -> Ali Raza select -> **Rental History** -> AGR-0001 (aur 5.6 wala) dikhna chahiye (FR3).
+Now Customers tab -> select Ali Raza -> **Rental History**: AGR-0001 (and the one from 5.6) must be listed (FR3).
 
 ---
 
@@ -251,7 +250,7 @@ Ab Customers tab -> Ali Raza select -> **Rental History** -> AGR-0001 (aur 5.6 w
 
 Login: `fleet` / `fleet123` -> **Maintenance** tab.
 
-### 7.1 Record banao (FR26)
+### 7.1 Create a record (FR26)
 
 | Field | Value |
 |---|---|
@@ -261,68 +260,68 @@ Login: `fleet` / `fleet123` -> **Maintenance** tab.
 | Cost | 85 |
 | Completion status | PENDING |
 
--> **Create Maintenance Record**.
-**Expected:** `MNT-0001` table mein; Vehicles tab mein LEC-303 **UNDER_MAINTENANCE**.
+Click **Create Maintenance Record**.
+**Expected:** `MNT-0001` appears; in the Vehicles tab LEC-303 is **UNDER_MAINTENANCE**.
 
-### 7.2 Maintenance vehicle block (FR27)
-Rental Staff se login karke Reservations mein CUS-0001 + LEC-303 reserve karo.
-**Expected:** "Vehicle cannot be reserved (status: UNDER_MAINTENANCE)". Availability list (4.1 jaisi) mein LEC-303 nahi aana chahiye.
+### 7.2 Maintenance blocks reservations (FR27)
+Login as Rental Staff and try to reserve LEC-303 for CUS-0001.
+**Expected:** "Vehicle cannot be reserved (status: UNDER_MAINTENANCE)". LEC-303 must also be missing from the "Show Available Vehicles" list (like Step 4.1).
 
 ### 7.3 Status update
-1. Fleet -> MNT-0001 select -> status `IN_PROGRESS` -> **Set Status** -> vehicle abhi bhi **UNDER_MAINTENANCE**.
-2. Status `COMPLETED` -> **Set Status** -> vehicle **AVAILABLE**.
+1. Fleet -> select MNT-0001 -> status `IN_PROGRESS` -> set status -> vehicle stays **UNDER_MAINTENANCE**.
+2. Set status `COMPLETED` -> vehicle becomes **AVAILABLE**.
 
-### 7.4 Rented vehicle par maintenance
-Jab koi vehicle RENTED ho (5.1 ke baad, return se pehle) us par PENDING record banane ki koshish karo.
+### 7.4 Maintenance on a rented vehicle
+While a vehicle is RENTED (after 5.1, before the return) try to create a PENDING maintenance record for it.
 **Expected:** "Vehicle is currently rented - it cannot be sent to maintenance now".
 
-### 7.5 Galat input
-Cost `-10` -> "Cost cannot be negative". Maintenance type khaali -> "Maintenance type is required".
+### 7.5 Invalid input
+Cost `-10` -> "Cost cannot be negative". Empty maintenance type -> "Maintenance type is required".
 
 ### 7.6 History (FR10)
-Vehicles ya Reports mein LEC-303 ki maintenance history dekho (Step 8.3).
+Check the maintenance history of LEC-303 in the Vehicles tab or in the report (Step 8.3).
 
 ---
 
 ## 8. Reports (FR28 - FR31)
 
-Rental, Fleet aur Admin teeno ko **Reports** tab dikhta hai.
+The **Reports** tab is visible to Rental Staff, Fleet Staff and Admin.
 
 | # | Report | Input | Expected |
 |---|---|---|---|
-| 8.1 | Fleet status (FR28) | Status: Any, phir RENTED/AVAILABLE | har vehicle ka status ke saath list; filter sahi chale |
-| 8.2 | Customer history (FR29) | `CUS-0001` | AGR-0001 (total 558.00, return date, payments) aur AGR-0002 |
-| 8.3 | Vehicle history (FR30) | `LEA-101` | AGR-0001 aur is vehicle ki maintenance history; `LEC-303` par MNT-0001 (cost 85.00) |
-| 8.4 | Revenue (FR31) | From: aaj se pehle ki date, To: aaj se baad ki date | `PAY-0001` 300.00, `PAY-0002` 258.00, **TOTAL REVENUE: 558.00** |
-| 8.5 | Revenue, range bhavishya mein (From 2030-01-01 To 2030-12-31) | | koi payment nahi, total 0.00 |
-| 8.6 | Customer history `CUS-9999` | | customer nahi mila ka error |
+| 8.1 | Fleet status (FR28) | Status: Any, then RENTED / AVAILABLE | Every vehicle with its status; the filter works |
+| 8.2 | Customer history (FR29) | `CUS-0001` | AGR-0001 (total 558.00, return date, payments) and AGR-0002 |
+| 8.3 | Vehicle history (FR30) | `LEA-101`, then `LEC-303` | LEA-101: AGR-0001. LEC-303: maintenance MNT-0001 (cost 85.00) |
+| 8.4 | Revenue (FR31) | From: a date before today, To: a date after today | `PAY-0001` 300.00, `PAY-0002` 258.00, **TOTAL REVENUE: 558.00** |
+| 8.5 | Revenue for a future range (2030-01-01 to 2030-12-31) | | No payments, total 0.00 |
+| 8.6 | Customer history for `CUS-9999` | | "customer not found" error |
 
-(Payment ki date wo hoti hai jis din aap ne payment record ki, yani aaj ki date.)
+(A payment's date is the day you recorded it, i.e. today, so the revenue range must include today.)
 
 ---
 
-## 9. Admin: sab kuch ek login se
+## 9. Admin: everything with one login
 
 Login: `admin` / `admin123`.
-1. Customers tab se naya customer register karo (jaise Bilal Ahmed, 0345-1112223, 35202-5550001-3, LIC-2025-10, expiry 2031-06-30) -> `CUS-0003`.
-2. Vehicles tab se naya vehicle register karo (LED-404, Honda, Civic, 2023, SEDAN, Automatic, Petrol, 5000, 120).
-3. Reservations tab se reservation banao aur confirm karo.
-4. Maintenance tab se record banao.
+1. Customers tab: register a new customer (e.g. Bilal Ahmed, 0345-1112223, 35202-5550001-3, LIC-2025-10, expiry 2031-06-30) -> `CUS-0003`.
+2. Vehicles tab: register a new vehicle (LED-404, Honda, Civic, 2023, SEDAN, Automatic, Petrol, 5000, 120).
+3. Reservations tab: create a reservation and confirm it.
+4. Maintenance tab: create a record.
 
-**Expected:** admin dono taraf ke kaam kar sakta hai, koi "not authorized" nahi.
+**Expected:** the admin can do both the rental work and the fleet work. No "not authorized" error appears.
 
 ---
 
-## 10. Database persistence (sab se zaroori)
+## 10. Database persistence (most important)
 
-1. Program band karo (window close).
-2. Dobara run karo, login karo.
-3. Har tab mein **Show All / Refresh** dabao.
+1. Close the program window.
+2. Start it again and login.
+3. In every tab click **Show All / Refresh**.
 
-**Expected:** customers, vehicles, reservations, agreements, payments, maintenance records sab wahin hon, aur statuses bhi (LEA-101 AVAILABLE, mileage 15800, AGR-0001 ka total 558.00 wahi).
+**Expected:** all customers, vehicles, reservations, agreements, payments and maintenance records are still there, with the same statuses (LEA-101 AVAILABLE, mileage 15800, AGR-0001 total 558.00).
 
-4. Ek naya customer register karo -> ID `CUS-0004` (purane IDs se aage), takrao nahi.
-5. SSMS (ya Azure Data Studio) mein dekho, database `VehicleRental`, aur chalao:
+4. Register one more customer. Its ID continues after the existing ones (e.g. `CUS-0004`) with no clash.
+5. Open SSMS (or Azure Data Studio), select the database `VehicleRental` and run:
 ```sql
 SELECT * FROM Customer;
 SELECT * FROM Vehicle;
@@ -330,30 +329,39 @@ SELECT * FROM Reservation;
 SELECT * FROM RentalAgreement;
 SELECT * FROM Payment;
 SELECT * FROM MaintenanceRecord;
-SELECT staffID, name, role, username FROM Staff;   -- password sirf hash hota hai
+SELECT staffID, name, role, username FROM Staff;   -- passwords are stored only as a hash
 ```
-**Expected:** har table mein wohi data jo GUI mein hai. Staff table mein password plain text nahi, sirf `passwordHash` hota hai.
+**Expected:** each table contains the same data as the GUI. The Staff table has no plain-text password, only `passwordHash`.
 
 ---
 
-## Evaluation ke liye 5-minute short demo
+## 11. Placeholders (hint text)
 
-1. `rental` login -> Customers: register Ali Raza.
-2. Logout, `fleet` login -> Vehicles: register LEA-101 (dikhao ke sirf 3 tabs hain).
-3. Logout, `rental` login -> Reservations: create + Confirm (estimated 300).
-4. Rentals: handover, phir return (558.00 ka invoice, 4 charges dikhao).
-5. Payments: 300 + 258, receipt.
-6. `fleet` -> Maintenance: record banao, vehicle UNDER_MAINTENANCE.
+On every tab, an empty text field shows a grey italic hint (for example National ID: `00000-0000000-0`, dates: `yyyy-MM-dd`). Check that:
+- the hint disappears as soon as you type and comes back when the field is empty again,
+- after **Clear Form** the hints are visible again,
+- clicking on the hint places the cursor in the field.
+
+---
+
+## 5-minute demo for the evaluation
+
+1. Login as `rental` -> Customers: register Ali Raza.
+2. Logout, login as `fleet` -> Vehicles: register LEA-101 (show that only 3 tabs are visible).
+3. Logout, login as `rental` -> Reservations: create and confirm (estimated 300).
+4. Rentals: handover, then return (invoice 558.00 with all four charges).
+5. Payments: pay 300 + 258, show the receipt.
+6. Login as `fleet` -> Maintenance: create a record, the vehicle becomes UNDER_MAINTENANCE.
 7. Reports: revenue 558.00.
-8. Program band karke dobara kholo -> data wahin (database).
+8. Close and reopen the program: the data is still there (database).
 
 ---
 
-## Result sheet (tick karte jao)
+## Result sheet (tick as you go)
 
 | Section | Pass? | Notes / problem |
 |---|---|---|
-| 1 Login aur roles | | |
+| 1 Login and roles | | |
 | 2 Vehicles | | |
 | 3 Customers | | |
 | 4 Reservations | | |
@@ -363,3 +371,4 @@ SELECT staffID, name, role, username FROM Staff;   -- password sirf hash hota ha
 | 8 Reports | | |
 | 9 Admin | | |
 | 10 Database persistence | | |
+| 11 Placeholders | | |
