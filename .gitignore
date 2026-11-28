@@ -1,0 +1,26 @@
+# Java compiled output
+*.class
+bin/
+
+# IDE/editor settings
+.vscode/
+.idea/
+*.iml
+
+# OS-generated files
+Thumbs.db
+.DS_Store
+
+# Logs and temporary files
+*.log
+*.tmp
+
+# SQLite database and runtime data
+/data/*.db
+data/*.db-journal
+data/*.db-wal
+data/*.db-shm
+
+# Extracted documentation text from local tools
+usecases.txt
+sequence.txt
